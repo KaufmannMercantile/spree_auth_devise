@@ -38,8 +38,23 @@ class Spree::UserPasswordsController < Devise::PasswordsController
       set_flash_message(:error, :cannot_be_blank)
       render :edit
     else
-      super
+      self.resource = resource_class.reset_password_by_token(resource_params)
+
+      if resource.errors.empty?
+        resource.unlock_access! if unlockable?(resource)
+        flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
+        set_flash_message(:notice, flash_message) if is_navigational_format?
+        sign_in(resource_name, resource)
+        respond_with resource, :location => after_resetting_password_path_for(resource)
+      else
+        respond_with resource
+      end
     end
   end
-
+  
+  protected
+  
+    def after_resetting_password_path_for(resource)
+      'http://kaufmann-mercantile.com'
+    end
 end
