@@ -63,5 +63,9 @@ class Spree::UserRegistrationsController < Devise::RegistrationsController
     def check_permissions
       authorize!(:create, resource)
     end
-
+    
+    def after_inactive_sign_up_path_for(resource)
+      cookies[:session_engaged] = {:value => 'confirm', :domain => '.kaufmann-mercantile.com'}
+      'http://kaufmann-mercantile.com'
+    end
 end
